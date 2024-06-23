@@ -5,7 +5,7 @@ import polars as pl
 
 data = pl.read_csv("price.csv")
 print(data)
-st.title("WELCOME TO IKMI MART")
+st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
     data["items"].sort().to_list(),
