@@ -13,8 +13,9 @@ items = st.multiselect(
 
 total_cost=0
 for ix,i in enumerate(items):
-    with st.container(height=100):
-        item_col, price_col, amount_col, total_col = st.columns(4, vertical_alignment="center")
+    with st.container(height=150):
+        item_col, price_col = st.columns(2, vertical_alignment="center")
+        amount_col, total_col = st.columns(2, vertical_alignment="center")
         item_col.write(i)
         price = data.filter(pl.col("items") == i).item(0,"price") 
         price_col.write(price)
