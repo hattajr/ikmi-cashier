@@ -17,7 +17,7 @@ for ix,i in enumerate(items):
         price = data.filter(pl.col("items") == i).item(0,"price") 
         amount = st.number_input(f"{i} `₩{price}`", value=1, key=i ,min_value=1)
         total_cost_ = price * amount 
-        st.write(total_cost_)
+        st.markdown(f"`₩{price} x {amount} = ₩{total_cost_}`")
         total_cost += total_cost_
 
 st.subheader(f"**Total: `₩{total_cost}`**")
