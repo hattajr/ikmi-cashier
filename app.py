@@ -3,8 +3,12 @@ import polars as pl
 
 
 
-data = pl.read_csv("price.csv")
-print(data)
+@st.cache_data
+def load_price():
+    data = pl.read_csv("price.csv")
+    return data
+
+data = load_price()
 st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
