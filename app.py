@@ -5,10 +5,12 @@ import polars as pl
 
 data = pl.read_csv("price.csv")
 print(data)
+st.title("WELCOME TO IKMI MART")
 items = st.multiselect(
-    "Barang/Items",
+    ":label: **Barang/Items:**",
     data["items"].sort().to_list(),
-    default=["Abc kopi"])
+    default=["Abc kopi"],
+)
 
 
 total_cost=0
