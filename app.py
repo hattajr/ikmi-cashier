@@ -12,7 +12,7 @@ st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
     data["Produk"].sort().to_list(),
-    default=["Abc kopi"],
+    default=None,
 )
 
 
