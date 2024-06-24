@@ -2,7 +2,6 @@ import streamlit as st
 import os
 import polars as pl
 
-@st.cache_data
 def load_price():
     data = pl.read_csv("price.csv", truncate_ragged_lines=True)
     return data
