@@ -83,6 +83,8 @@ six==1.16.0
 smmap==5.0.1
     # via gitdb
 streamlit==1.36.0
+    # via streamlit-tags
+streamlit-tags==1.2.8
 tenacity==8.4.1
     # via streamlit
 toml==0.10.2
