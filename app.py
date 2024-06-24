@@ -6,6 +6,7 @@ def load_price():
     data = pl.read_csv("price.csv", truncate_ragged_lines=True)
     return data
 
+
 data = load_price().with_columns(pl.col("Harga").str.strip_chars().cast(int)).drop_nulls()
 print(data.filter(pl.col("Produk") == "Abon sapi"))
 st.title("IKMI MART CALCULATOR")
