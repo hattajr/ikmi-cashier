@@ -8,7 +8,6 @@ def load_price():
 
 
 data = load_price().with_columns(pl.col("Harga").str.strip_chars().cast(int)).drop_nulls()
-print(data.filter(pl.col("Produk") == "Abon sapi"))
 st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
