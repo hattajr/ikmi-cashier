@@ -7,7 +7,7 @@ def load_price():
     data = pl.read_csv("price.csv", truncate_ragged_lines=True)
     return data
 
-data = load_price().with_columns(pl.col("Harga").str.strip().cast(int))
+data = load_price().with_columns(pl.col("Harga").str.strip_chars().cast(int))
 st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
