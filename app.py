@@ -18,11 +18,10 @@ def load_price_gsheets():
     response = requests.get(f'https://docs.google.com/spreadsheets/d/{config["gsheets"]["sheet_id"]}/export?format=csv')
     with open('prices_gsheet.csv', 'wb') as f:
         f.write(response.content)
-    data = pl.read_csv("prices_gsheet.csv")
+    data = pl.read_csv("prices_gsheet.csv").drop_nulls()
     return data
 
 data = load_price_gsheets()
-print(data)
 st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
