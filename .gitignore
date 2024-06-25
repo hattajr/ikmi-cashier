@@ -2,3 +2,4 @@
 .trash/
 .streamlit/
 secret.toml
+**.csv
