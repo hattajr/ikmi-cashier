@@ -9,7 +9,7 @@ CONFIG_FILEPATH = "config.toml"
 PRICE_FILEPATH = "prices.csv"
 TTL_CACHE = 60 * 15
 
-st.set_page_config(layout="wide", initial_sidebar_state='collapsed')
+st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
 
 def get_price_gsheets():
@@ -32,7 +32,7 @@ def load_price_local():
     return data
 
 
-st.title("Test")
+st.title("IKMI MART CALCULATOR")
 
 with st.sidebar:
     is_update = st.button("Update Database")
@@ -47,7 +47,6 @@ with st.sidebar:
             st.cache_data.clear()
             get_price_gsheets()
             st.info("Database is updated")
-        
 
 
 data = load_price_local()
