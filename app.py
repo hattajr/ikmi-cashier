@@ -23,7 +23,7 @@ def load_price_gsheets():
 
 data = load_price_gsheets()
 print(data)
-st.title("TEST")
+st.title("IKMI MART CALCULATOR")
 items = st.multiselect(
     ":label: **Barang/Items:**",
     data["Produk"].sort().to_list(),
