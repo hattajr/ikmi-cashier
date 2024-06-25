@@ -9,7 +9,7 @@ CONFIG_FILEPATH = "config.toml"
 PRICE_FILEPATH = "prices.csv"
 TTL_CACHE = 60 * 15
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", initial_sidebar_state='collapsed')
 
 
 def get_price_gsheets():
@@ -26,12 +26,30 @@ def get_price_gsheets():
 @st.cache_data(ttl=TTL_CACHE, show_spinner=False)
 def load_price_local():
     if not os.path.exists(PRICE_FILEPATH):
+        st.info("get gsheets")
         get_price_gsheets()
     data = pl.read_csv(PRICE_FILEPATH).drop_nulls()
     return data
 
 
-st.title("IKMI MART CALCULATOR")
+st.title("Test")
+
+with st.sidebar:
+    is_update = st.button("Update Database")
+    if is_update:
+        try:
+            os.remove(PRICE_FILEPATH)
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            st.error(e)
+        finally:
+            st.cache_data.clear()
+            get_price_gsheets()
+            st.info("Database is updated")
+        
+
+
 data = load_price_local()
 items = st.multiselect(
     ":label: **Barang/Items:**",
