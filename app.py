@@ -1,14 +1,29 @@
 import streamlit as st
 import os
 import polars as pl
+import requests
+import toml
+
 st.set_page_config(layout="wide")
-def load_price():
+
+
+def load_price_local():
     data = pl.read_csv("price.csv", truncate_ragged_lines=True)
+    return data.with_columns(pl.col("Harga").str.strip_chars().cast(int)).drop_nulls()
+
+@st.cache_data
+def load_price_gsheets():
+    with open('secret.toml', 'r') as file:
+        secret = toml.load(file)
+    response = requests.get(f'https://docs.google.com/spreadsheets/d/{secret["gsheets"]["sheet_id"]}/export?format=csv')
+    with open('prices_gsheet.csv', 'wb') as f:
+        f.write(response.content)
+    data = pl.read_csv("prices_gsheet.csv")
     return data
 
-
-data = load_price().with_columns(pl.col("Harga").str.strip_chars().cast(int)).drop_nulls()
-st.title("IKMI MART CALCULATOR")
+data = load_price_gsheets()
+print(data)
+st.title("TEST")
 items = st.multiselect(
     ":label: **Barang/Items:**",
     data["Produk"].sort().to_list(),
