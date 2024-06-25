@@ -13,9 +13,9 @@ def load_price_local():
 
 @st.cache_data
 def load_price_gsheets():
-    with open('secret.toml', 'r') as file:
-        secret = toml.load(file)
-    response = requests.get(f'https://docs.google.com/spreadsheets/d/{secret["gsheets"]["sheet_id"]}/export?format=csv')
+    with open('config.toml', 'r') as file:
+        config = toml.load(file)
+    response = requests.get(f'https://docs.google.com/spreadsheets/d/{config["gsheets"]["sheet_id"]}/export?format=csv')
     with open('prices_gsheet.csv', 'wb') as f:
         f.write(response.content)
     data = pl.read_csv("prices_gsheet.csv")
