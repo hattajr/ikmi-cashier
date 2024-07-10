@@ -14,8 +14,9 @@ st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 if "selection" not in st.session_state:
     st.session_state.selection = None
 
-if "var_list" not in st.session_state:
-    st.session_state["var_list"] = []
+
+if "shopping_list" not in st.session_state:
+    st.session_state["shopping_list"] = {}
 
 
 def get_price_gsheets():
@@ -61,21 +62,26 @@ def clear_selectbox():
     code = st.session_state.selection
     if code:
         produk = data.filter(pl.col("Barcode") == code).item(0, "Produk")
-        st.info(f"**{produk}** berhasil ditambahkan.")
-        st.session_state.var_list.append(
-            {
-                code: {
-                    "produk": produk,
-                    "harga": data.filter(pl.col("Barcode") == code).item(0, "Harga"),
+        if code in st.session_state.shopping_list.keys():
+            if st.session_state.shopping_list[code]["count"] >= 1:
+                st.error(f"{produk} telah dinput")
+        else:
+            st.session_state.shopping_list.update(
+                {
+                    code: {
+                        "produk": produk,
+                        "harga": data.filter(pl.col("Barcode") == code).item(
+                            0, "Harga"
+                        ),
+                        "count": 1,
+                    }
                 }
-            }
-        )
+            )
+
     st.session_state.selection = None
 
 
-# var_list_copy = copy.deepcopy(st.session_state.var_list)
-
-code = st.selectbox(
+code_input = st.selectbox(
     ":label: **Barang/Items:**",
     options=data["Barcode"].sort().to_list(),
     index=None,
@@ -86,34 +92,32 @@ code = st.selectbox(
 
 total_cost = 0
 total_item = 0
-items = {}
-for ix, item in enumerate(st.session_state.var_list):
-    for key, value in item.items():
-        if key in items:
-            items[key]["count"] += 1
-        else:
-            items[key] = {
-                "harga": value["harga"],
-                "produk": value["produk"],
-                "count": 1,
-            }
 
-for ix, (k, v) in enumerate(items.items()):
-    with st.container(height=250):
-        produk_name = v["produk"]
-        price = v["harga"]
+for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
+    with st.container(height=300):
+        produk_name = details["produk"]
+        price = details["harga"]
         image_path = f"images/{produk_name}.png"
         if os.path.exists(image_path):
             st.image(image_path, width=100)
         else:
             st.image("images/no_image.jpg", width=100)
+
         amount = st.number_input(
-            f"{produk_name} `₩{price}`", value=v["count"], key=ix, min_value=1
+            f"{produk_name} `₩{price}`",
+            value=details["count"],
+            min_value=0,
         )
         total_item += amount
         total_cost_ = price * amount
         st.markdown(f"`₩{price} x {amount} = ₩{total_cost_}`")
         total_cost += total_cost_
+        
+        is_delete = st.button("delete", key=ix)
+        if is_delete:
+            del st.session_state.shopping_list[code]
+
+
 
 st.success(f"""
     **Jumlah Barang : {total_item:,}**\n
