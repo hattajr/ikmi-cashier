@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 
 import polars as pl
 import requests
@@ -6,10 +7,17 @@ import streamlit as st
 import toml
 
 CONFIG_FILEPATH = "config.toml"
-PRICE_FILEPATH = "prices.csv"
+PRICE_FILEPATH = "price_test.csv"
 TTL_CACHE = 60 * 15
 
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
+
+if "selection" not in st.session_state:
+    st.session_state.selection = None
+
+
+if "shopping_list" not in st.session_state:
+    st.session_state["shopping_list"] = {}
 
 
 def get_price_gsheets():
@@ -32,7 +40,7 @@ def load_price_local():
     return data
 
 
-st.title("IKMI MART CALCULATOR")
+st.title("AL-FALAH MART")
 
 with st.sidebar:
     is_update = st.button("Update Database")
@@ -48,30 +56,67 @@ with st.sidebar:
             get_price_gsheets()
             st.info("Database is updated")
 
-
 data = load_price_local()
-items = st.multiselect(
-    ":label: **Barang/Items:**",
-    data["Produk"].sort().to_list(),
-    default=None,
-)
 
+
+def clear_selectbox():
+    code = st.session_state.selection
+    if code:
+        produk = data.filter(pl.col("Produk") == code).item(0, "Produk")
+        if code in st.session_state.shopping_list.keys():
+            if st.session_state.shopping_list[code]["count"] >= 1:
+                st.error(f"{produk} telah dinput")
+        else:
+            st.session_state.shopping_list.update(
+                {
+                    code: {
+                        "produk": produk,
+                        "harga": data.filter(pl.col("Produk") == code).item(0, "Harga"),
+                        "count": 1,
+                    }
+                }
+            )
+
+    st.session_state.selection = None
+
+
+code_input = st.selectbox(
+    ":label: **Barang/Items:**",
+    options=data["Produk"].sort().to_list(),
+    index=None,
+    # format_func=lambda option: f'{data.filter(pl.col("Barcode") == option).item(0, "Produk")} - {option}',
+    key="selection",
+    on_change=clear_selectbox(),
+)
 
 total_cost = 0
 total_item = 0
-for ix, i in enumerate(items):
-    with st.container(height=250):
-        price = data.filter(pl.col("Produk") == i).item(0, "Harga")
-        image_path = f"images/{i}.png"
+
+pprint(st.session_state.shopping_list)
+
+for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
+    with st.container(height=300):
+        produk_name = details["produk"]
+        price = details["harga"]
+        image_path = f"images/{produk_name}.png"
         if os.path.exists(image_path):
             st.image(image_path, width=100)
         else:
             st.image("images/no_image.jpg", width=100)
-        amount = st.number_input(f"{i} `₩{price}`", value=1, key=i, min_value=1)
+
+        amount = st.number_input(
+            f"{produk_name} `₩{price:,}`",
+            value=details["count"],
+            min_value=0,
+        )
         total_item += amount
         total_cost_ = price * amount
-        st.markdown(f"`₩{price} x {amount} = ₩{total_cost_}`")
+        st.markdown(f"`₩{price:,} x {amount} = ₩{total_cost_:,}`")
         total_cost += total_cost_
+
+        is_delete = st.button("delete", key=ix)
+        if is_delete:
+            del st.session_state.shopping_list[code]
 
 st.success(f"""
     **Jumlah Barang : {total_item:,}**\n
