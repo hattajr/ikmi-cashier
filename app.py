@@ -34,7 +34,6 @@ def get_price_gsheets():
 @st.cache_data(ttl=TTL_CACHE, show_spinner=False)
 def load_price_local():
     if not os.path.exists(PRICE_FILEPATH):
-        st.info("get gsheets")
         get_price_gsheets()
     data = pl.read_csv(PRICE_FILEPATH).drop_nulls()
     return data
