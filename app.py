@@ -121,3 +121,12 @@ st.success(f"""
     **Jumlah Barang : {total_item:,}**\n
     **Total Harga (₩): {total_cost:,}**
 """)
+
+with st.container(height=150, border=True):
+    st.markdown("""
+    **REKENING PEMBAYARAN**
+
+    APRILIYANTO FADA
+
+    HANA BANK  **·**  398 910531 91007
+    """)
