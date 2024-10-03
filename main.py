@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 
 import polars as pl
 import requests
@@ -39,7 +40,7 @@ def load_price_local():
     return data
 
 
-st.title("IKMI MART CALCULATOR")
+st.title("AL-FALAH MART")
 
 with st.sidebar:
     is_update = st.button("Update Database")
@@ -61,7 +62,7 @@ data = load_price_local()
 def clear_selectbox():
     code = st.session_state.selection
     if code:
-        produk = data.filter(pl.col("Barcode") == code).item(0, "Produk")
+        produk = data.filter(pl.col("Produk") == code).item(0, "Produk")
         if code in st.session_state.shopping_list.keys():
             if st.session_state.shopping_list[code]["count"] >= 1:
                 st.error(f"{produk} telah dinput")
@@ -70,9 +71,7 @@ def clear_selectbox():
                 {
                     code: {
                         "produk": produk,
-                        "harga": data.filter(pl.col("Barcode") == code).item(
-                            0, "Harga"
-                        ),
+                        "harga": data.filter(pl.col("Produk") == code).item(0, "Harga"),
                         "count": 1,
                     }
                 }
@@ -83,15 +82,17 @@ def clear_selectbox():
 
 code_input = st.selectbox(
     ":label: **Barang/Items:**",
-    options=data["Barcode"].sort().to_list(),
+    options=data["Produk"].sort().to_list(),
     index=None,
-    format_func=lambda option: f'{data.filter(pl.col("Barcode") == option).item(0, "Produk")} - {option}',
+    # format_func=lambda option: f'{data.filter(pl.col("Barcode") == option).item(0, "Produk")} - {option}',
     key="selection",
     on_change=clear_selectbox(),
 )
 
 total_cost = 0
 total_item = 0
+
+pprint(st.session_state.shopping_list)
 
 for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
     with st.container(height=300):
@@ -104,20 +105,18 @@ for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items
             st.image("images/no_image.jpg", width=100)
 
         amount = st.number_input(
-            f"{produk_name} `₩{price}`",
+            f"{produk_name} `₩{price:,}`",
             value=details["count"],
             min_value=0,
         )
         total_item += amount
         total_cost_ = price * amount
-        st.markdown(f"`₩{price} x {amount} = ₩{total_cost_}`")
+        st.markdown(f"`₩{price:,} x {amount} = ₩{total_cost_:,}`")
         total_cost += total_cost_
-        
+
         is_delete = st.button("delete", key=ix)
         if is_delete:
             del st.session_state.shopping_list[code]
-
-
 
 st.success(f"""
     **Jumlah Barang : {total_item:,}**\n
