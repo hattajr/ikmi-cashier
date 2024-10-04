@@ -129,11 +129,13 @@ st.success(f"""
     **Total Harga (₩): {total_cost:,}**
 """)
 
-with st.container(height=150, border=True):
+with st.container(height=200, border=True):
     st.markdown("""
     **REKENING PEMBAYARAN**
 
-    APRILIYANTO FADA
+    🏧 HANA BANK  **·**  3989 1053 191007
 
-    HANA BANK  **·**  398 910531 91007
+    👨 APRILIYANTO FADA
+
+    📞 010 5608 2996
     """)
