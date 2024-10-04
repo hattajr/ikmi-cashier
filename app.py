@@ -73,6 +73,7 @@ def clear_selectbox():
                     code: {
                         "produk": produk,
                         "harga": data.filter(pl.col("Produk") == code).item(0, "Harga"),
+                        "unit": data.filter(pl.col("Produk") == code).item(0, "Unit"),
                         "count": 1,
                     }
                 }
@@ -83,7 +84,10 @@ def clear_selectbox():
 
 code_input = st.selectbox(
     ":label: **Barang/Items:**",
-    options=data.select("Produk", "Harga", "Brand", "Unit").sort(by="Produk").to_numpy().tolist(),
+    options=data.select("Produk", "Harga", "Brand", "Unit")
+    .sort(by="Produk")
+    .to_numpy()
+    .tolist(),
     index=None,
     format_func=lambda option: f"{option[0]} (₩{option[1]:,}/{option[3] if option[3] != 'none' else ''})",
     key="selection",
@@ -98,6 +102,7 @@ pprint(st.session_state.shopping_list)
 for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
     with st.container(height=300):
         produk_name = details["produk"]
+        unit = details["unit"]
         price = details["harga"]
         image_path = f"images/{produk_name}.png"
         if os.path.exists(image_path):
@@ -106,7 +111,7 @@ for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items
             st.image("images/no_image.jpg", width=100)
 
         amount = st.number_input(
-            f"{produk_name} `₩{price:,}`",
+            f"{produk_name} `₩{price:,}/{unit if unit != 'none' else ''}`",
             value=details["count"],
             min_value=0,
         )
