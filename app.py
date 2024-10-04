@@ -85,7 +85,7 @@ code_input = st.selectbox(
     ":label: **Barang/Items:**",
     options=data.select("Produk", "Harga", "Brand", "Unit").sort(by="Produk").to_numpy().tolist(),
     index=None,
-    format_func=lambda option: f"{option[0]} (₩{option[1]:,}/{option[3]})",
+    format_func=lambda option: f"{option[0]} (₩{option[1]:,}/{option[3] if option[3] != 'none' else ''})",
     key="selection",
     on_change=clear_selectbox(),
 )
