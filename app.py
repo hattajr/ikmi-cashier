@@ -35,7 +35,7 @@ def get_price_gsheets():
 def load_price_local():
     if not os.path.exists(PRICE_FILEPATH):
         get_price_gsheets()
-    data = pl.read_csv(PRICE_FILEPATH).drop_nulls()
+    data = pl.read_csv(PRICE_FILEPATH)
     return data
 
 
@@ -55,12 +55,14 @@ with st.sidebar:
             get_price_gsheets()
             st.info("Database is updated")
 
-data = load_price_local()
+data = load_price_local().with_columns(pl.col("Harga").cast(pl.Int64))
+print(data.head())
 
 
 def clear_selectbox():
     code = st.session_state.selection
     if code:
+        code = code[0]
         produk = data.filter(pl.col("Produk") == code).item(0, "Produk")
         if code in st.session_state.shopping_list.keys():
             if st.session_state.shopping_list[code]["count"] >= 1:
@@ -81,9 +83,9 @@ def clear_selectbox():
 
 code_input = st.selectbox(
     ":label: **Barang/Items:**",
-    options=data["Produk"].sort().to_list(),
+    options=data.select("Produk", "Harga", "Brand", "Unit").sort(by="Produk").to_numpy().tolist(),
     index=None,
-    # format_func=lambda option: f'{data.filter(pl.col("Barcode") == option).item(0, "Produk")} - {option}',
+    format_func=lambda option: f"{option[0]} (₩{option[1]:,}/{option[3]})",
     key="selection",
     on_change=clear_selectbox(),
 )
