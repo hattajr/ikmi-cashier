@@ -56,7 +56,7 @@ with st.sidebar:
             st.info("Database is updated")
 
 data = load_price_local().with_columns(pl.col("Harga").cast(pl.Int64))
-print(data.head())
+# print(data.head())
 
 
 def clear_selectbox():
@@ -97,7 +97,7 @@ code_input = st.selectbox(
 total_cost = 0
 total_item = 0
 
-pprint(st.session_state.shopping_list)
+# pprint(st.session_state.shopping_list)
 
 for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
     with st.container(height=300):
