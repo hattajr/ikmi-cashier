@@ -1,6 +1,6 @@
 import os
-from pprint import pprint
 
+from PIL import Image
 import polars as pl
 import requests
 import streamlit as st
@@ -100,13 +100,15 @@ total_item = 0
 # pprint(st.session_state.shopping_list)
 
 for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items()):
-    with st.container(height=300):
+    with st.container(height=325):
         produk_name = details["produk"]
         unit = details["unit"]
         price = details["harga"]
         image_path = f"images/{produk_name}.jpg"
         if os.path.exists(image_path):
-            st.image(image_path, width=100)
+            img = Image.open(image_path)
+            resized_img = img.resize((100, 100))
+            st.image(resized_img, width=100)
         else:
             st.image("images/no_image.jpg", width=100)
 
