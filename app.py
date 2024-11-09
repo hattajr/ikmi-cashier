@@ -104,7 +104,7 @@ for ix, (code, details) in enumerate(st.session_state.shopping_list.copy().items
         produk_name = details["produk"]
         unit = details["unit"]
         price = details["harga"]
-        image_path = f"images/{produk_name}.png"
+        image_path = f"images/{produk_name}.jpg"
         if os.path.exists(image_path):
             st.image(image_path, width=100)
         else:
